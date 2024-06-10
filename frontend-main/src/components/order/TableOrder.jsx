@@ -1,6 +1,4 @@
-import { BookingTypesConvert } from "@constant/order";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
+import { BookingTypesConvert, OrderDetailsStatusColor } from "@constant/order";
 import IconButton from "@mui/material/IconButton";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -10,8 +8,9 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Tooltip from "@mui/material/Tooltip";
-import { formatDate } from "@utils/format";
+import { calcTotalHour, formatDate } from "@utils/format";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import { Chip } from "@mui/material";
 
 const TableOrder = ({
   data,
@@ -25,77 +24,85 @@ const TableOrder = ({
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Order ID</TableCell>
             <TableCell align="left">Booking type</TableCell>
+            <TableCell align="left">Football</TableCell>
             {isAdmin ? <TableCell align="left">Customer</TableCell> : null}
-            <TableCell align="right">Phone Number</TableCell>
-            <TableCell align="right">OrderAt</TableCell>
+            <TableCell align="left">Date</TableCell>
+            <TableCell align="left">Times</TableCell>
+            <TableCell align="left">OrderAt</TableCell>
+            <TableCell align="center">Status</TableCell>
             <TableCell align="right">Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {data.length ? (
-            data.map((row, index) => (
-              <TableRow
-                key={index}
-                sx={{
-                  "&:last-child td, &:last-child th": { border: 0 },
-                  "&:first-child": {
-                    background: (theme) => theme.palette.primary.main,
-                    "& > td, & > th": {
-                      color: (theme) => theme.palette.common.white,
+            data.map((row, index) => {
+              const calc = calcTotalHour(
+                row.details[0].startTime,
+                row.details[0].endTime
+              );
+
+              return (
+                <TableRow
+                  key={index}
+                  sx={{
+                    "&:last-child td, &:last-child th": { border: 0 },
+                    "&:first-of-type": {
+                      background: (theme) => theme.palette.primary.main,
+                      "& > td, & > th": {
+                        color: (theme) => theme.palette.common.white,
+                      },
                     },
-                  },
-                }}
-              >
-                <TableCell component="th" scope="row" sx={{ fontWeight: "bold" }}>
-                  {row._id}
-                </TableCell>
-
-                <TableCell align="left">{BookingTypesConvert[row.type]}</TableCell>
-                {isAdmin ? (
-                  <TableCell align="left" sx={{ fontWeight: "bold" }}>
-                    {row.user.displayName}
+                  }}
+                >
+                  <TableCell align="left">
+                    {BookingTypesConvert[row.type]}
                   </TableCell>
-                ) : null}
-                <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                  {row.phoneNumber}
-                </TableCell>
-                <TableCell align="right">{formatDate(row.createdAt)}</TableCell>
-                <TableCell align="right">
+                  <TableCell align="left">
+                    {row.details[0].football.name} (number{" "}
+                    {row.details[0].football.number})
+                  </TableCell>
                   {isAdmin ? (
-                    <>
-                      <Tooltip title="Edit">
-                        <IconButton
-                          onClick={() => onEdit?.(row)}
-                          color={index === 0 ? "inherit" : "primary"}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Delete">
-                        <IconButton
-                          onClick={() => onDelete?.(row)}
-                          color={index === 0 ? "inherit" : "error"}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </>
+                    <TableCell align="left" sx={{ fontWeight: "bold" }}>
+                      {row.user.displayName}
+                    </TableCell>
                   ) : null}
-
-                  <Tooltip title="See details">
-                    <IconButton
-                      onClick={() => onSeeDetails?.(row)}
-                      color={index === 0 ? "inherit" : "secondary"}
-                    >
-                      <RemoveRedEyeIcon />
-                    </IconButton>
-                  </Tooltip>
-                </TableCell>
-              </TableRow>
-            ))
+                  <TableCell align="left">
+                    {formatDate(
+                      row.details[0].date,
+                      "dddd, DD/MM/YYYY",
+                      "DD/MM/YYYY"
+                    )}
+                  </TableCell>
+                  <TableCell align="left" sx={{ fontWeight: "bold" }}>
+                    {`${row.details[0].startTime} - ${
+                      row.details[0].endTime
+                    } = ${`${calc.hours} hour`} ${
+                      calc.minutes ? `${calc.minutes + " minutes"}` : ""
+                    } `}
+                  </TableCell>
+                  <TableCell align="left">
+                    {formatDate(row.createdAt)}
+                  </TableCell>
+                  <TableCell align="center">
+                    <Chip
+                      label={row.details[0].status}
+                      color={OrderDetailsStatusColor[row.details[0].status]}
+                    />
+                  </TableCell>
+                  <TableCell align="right">
+                    <Tooltip title="See details">
+                      <IconButton
+                        onClick={() => onSeeDetails?.(row)}
+                        color={index === 0 ? "inherit" : "secondary"}
+                      >
+                        <RemoveRedEyeIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              );
+            })
           ) : (
             <TableRow>
               <TableCell colSpan={isAdmin ? 6 : 5} align="center">

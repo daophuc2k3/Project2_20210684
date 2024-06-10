@@ -89,6 +89,15 @@ class OrderController {
       metadata: await OrderService.updateOrderDetails(orderDetailsId, data),
     }).send(res);
   };
+
+  cancelOrderDetails = async (req, res) => {
+    const orderDetailsId = req.params.orderDetailsId;
+
+    return new Ok({
+      message: "Cancel order details successfully",
+      metadata: await OrderService.cancelOrderDetails(orderDetailsId),
+    }).send(res);
+  };
 }
 
 module.exports = new OrderController();

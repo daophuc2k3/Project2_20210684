@@ -40,7 +40,11 @@ class CategoryService {
       throw new ConflictRequestError(`Category was exist!`);
     }
 
-    const response = await updateCategory(id, { name, slug: categorySlug, quantity });
+    const response = await updateCategory(id, {
+      name,
+      slug: categorySlug,
+      quantity,
+    });
 
     if (!response) {
       throw new BadRequestError(`Error: Can't update slug`);
@@ -70,6 +74,18 @@ class CategoryService {
     await response.deleteOne();
 
     return true;
+  };
+
+  static updateStatus = async (categoryId, status) => {
+    const category = await this.getById(categoryId);
+
+    if (!category) {
+      throw new NotFoundRequestError("Category not found");
+    }
+
+    return await updateCategory(categoryId, {
+      status,
+    });
   };
 }
 

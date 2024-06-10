@@ -1,4 +1,4 @@
-import { OrderDetailsStatusColor } from "@constant/order";
+import { OrderDetailsStatus, OrderDetailsStatusColor } from "@constant/order";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
@@ -119,7 +119,11 @@ const TableOrderDetails = ({
                       />
                     ) : (
                       <Tooltip title="Cancel">
-                        <IconButton onClick={() => onCancel?.(row)} color="error">
+                        <IconButton
+                          disabled={row.status !== OrderDetailsStatus.new}
+                          onClick={() => onCancel?.(row)}
+                          color="error"
+                        >
                           <DoDisturbIcon />
                         </IconButton>
                       </Tooltip>

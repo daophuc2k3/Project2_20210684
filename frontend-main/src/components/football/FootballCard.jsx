@@ -45,7 +45,12 @@ const FootballCard = ({ images, item, onBookingNow = (values) => {} }) => {
                   component={"img"}
                   src={image}
                   loading="lazy"
-                  sx={{ width: "100%", height: 300, objectFit: "cover", borderRadius: 1 }}
+                  sx={{
+                    width: "100%",
+                    height: 300,
+                    objectFit: "cover",
+                    borderRadius: 1,
+                  }}
                 />
               </SwiperSlide>
             ))}
@@ -59,12 +64,19 @@ const FootballCard = ({ images, item, onBookingNow = (values) => {} }) => {
           </Box>
 
           <Box my={2}>
-            <Typography variant="h6" noWrap>{`${item.name} (Số ${item.number})`}</Typography>
-            <Typography>{`Category: ${item.category.name}`}</Typography>
-            <Typography>{`Total people: ${item.category.quantity}`}</Typography>
-            <Typography>{`Price 1 hour: ${formatPrice(item.price)}`}</Typography>
             <Typography
-              color={item.status === FootballStatus.available ? "green" : "error"}
+              variant="h6"
+              noWrap
+            >{`${item.name} (Số ${item.number})`}</Typography>
+            <Typography>{`Category: ${item.category?.name}`}</Typography>
+            <Typography>{`Total people: ${item.category?.quantity}`}</Typography>
+            <Typography>{`Price 1 hour: ${formatPrice(
+              item.price
+            )}`}</Typography>
+            <Typography
+              color={
+                item.status === FootballStatus.available ? "green" : "error"
+              }
               fontWeight={700}
             >{`Status: ${item.status}`}</Typography>
           </Box>

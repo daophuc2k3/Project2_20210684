@@ -43,6 +43,7 @@ export const listItemsClient = [
     name: "Profile",
     path: "/profile",
     Icon: <PeopleIcon />,
+    isCustomer: true,
   },
   {
     name: "Football",

@@ -4,7 +4,10 @@ import Metadata from "@components/shared/Metadata";
 import { useAuth } from "@features/auth/authSlice";
 import { useCategory } from "@features/category/categorySlice";
 import { fetchAllCategory } from "@features/category/categoryThunk";
-import { setFilterFootball, useFootball } from "@features/football/footballSlice";
+import {
+  setFilterFootball,
+  useFootball,
+} from "@features/football/footballSlice";
 import { fetchAllFootball } from "@features/football/footballThunk";
 import { useOrder } from "@features/order/orderSlice";
 import { fetchAddOrder } from "@features/order/orderThunk";
@@ -40,7 +43,7 @@ const FootballPageClient = () => {
   const maxYear = currentDate.getFullYear();
 
   useEffect(() => {
-    dispatch(fetchAllCategory({ limit: 9999999 }));
+    dispatch(fetchAllCategory({ limit: 9999999, options: { status: "SHOW" } }));
   }, []);
 
   useEffect(() => {
@@ -66,18 +69,24 @@ const FootballPageClient = () => {
       return { user: "", phoneNumber: "", type: "" };
     }
 
-    return { user: user.displayName, phoneNumber: user.phoneNumber ?? "", type: "" };
+    return {
+      user: user.displayName,
+      phoneNumber: user.phoneNumber ?? "",
+      type: "",
+    };
   }, [user]);
 
   const handleOnSubmitBooking = (values) => {
     // console.log(`values`, values);
-    dispatch(fetchAddOrder({ ...values, user: user._id })).then(({ payload }) => {
-      if (!isEmpty(payload.error)) return;
+    dispatch(fetchAddOrder({ ...values, user: user._id })).then(
+      ({ payload }) => {
+        if (!isEmpty(payload.error)) return;
 
-      navigate("/order");
-      setOpenBooking(false);
-      setSelected(null);
-    });
+        navigate("/order");
+        setOpenBooking(false);
+        setSelected(null);
+      }
+    );
   };
 
   const handleChangePage = (_, page) => {
@@ -88,7 +97,10 @@ const FootballPageClient = () => {
     <>
       <Metadata title={"Home"} />
 
-      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.modal + 1 }} open={loading}>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.modal + 1 }}
+        open={loading}
+      >
         <CircularProgress color="inherit" />
       </Backdrop>
 
@@ -179,7 +191,12 @@ const FootballPageClient = () => {
             )
           ) : (
             <Box sx={{ textAlign: "center", width: "100%" }}>
-              <Typography sx={{ fontWeight: "bold", color: (theme) => theme.palette.error.main }}>
+              <Typography
+                sx={{
+                  fontWeight: "bold",
+                  color: (theme) => theme.palette.error.main,
+                }}
+              >
                 Empty data
               </Typography>
             </Box>

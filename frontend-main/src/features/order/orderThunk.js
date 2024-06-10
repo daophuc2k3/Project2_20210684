@@ -60,6 +60,21 @@ export const fetchChangeStatus = createAsyncThunk(
   }
 );
 
+export const cancelOrderDetails = createAsyncThunk(
+  "order/cancelOrderDetails",
+  async (orderDetailsId, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await orderAPI.post(null, `/cancel-order-details/${orderDetailsId}`);
+      toast.success("Hủy đặt sân thành công");
+      return response;
+    } catch (error) {
+      const message = error?.response?.data.message ?? error?.message;
+      toast.error(message);
+      return rejectWithValue(message);
+    }
+  }
+);
+
 export const fetchEditOrderDetails = createAsyncThunk(
   "order/fetchEditOrderDetails",
   async ({ data, orderDetailsId }, { rejectWithValue, dispatch }) => {

@@ -4,7 +4,10 @@ import DialogDelete from "@components/shared/DialogDelete";
 import Metadata from "@components/shared/Metadata";
 import { useCategory } from "@features/category/categorySlice";
 import { fetchAllCategory } from "@features/category/categoryThunk";
-import { setFilterFootball, useFootball } from "@features/football/footballSlice";
+import {
+  setFilterFootball,
+  useFootball,
+} from "@features/football/footballSlice";
 import {
   fetchAddFootball,
   fetchAllFootball,
@@ -34,7 +37,9 @@ const FootballPage = () => {
   }, [filters]);
 
   useEffect(() => {
-    dispatch(fetchAllCategory({ limit: 999999999 }));
+    dispatch(
+      fetchAllCategory({ limit: 999999999, options: { status: "SHOW" } })
+    );
   }, []);
 
   const handleClickOpen = () => {
@@ -82,7 +87,7 @@ const FootballPage = () => {
 
     return {
       ...selected,
-      category: selected.category._id,
+      category: selected.category?._id,
     };
   }, [selected]);
 
@@ -90,15 +95,17 @@ const FootballPage = () => {
     if (values._id && selected) {
       const cloneSelected = { ...selected };
 
-      const imageDeleted = cloneSelected.images.filter((img) => ![...values.images].includes(img));
-
-      dispatch(fetchEditFootball({ id: values._id, data: { ...values, imageDeleted } })).then(
-        (payload) => {
-          if (!isEmpty(payload.error)) return;
-          setOpen(false);
-          setSelected(null);
-        }
+      const imageDeleted = cloneSelected.images.filter(
+        (img) => ![...values.images].includes(img)
       );
+
+      dispatch(
+        fetchEditFootball({ id: values._id, data: { ...values, imageDeleted } })
+      ).then((payload) => {
+        if (!isEmpty(payload.error)) return;
+        setOpen(false);
+        setSelected(null);
+      });
     } else {
       dispatch(fetchAddFootball(values)).then((payload) => {
         if (!isEmpty(payload.error)) return;
@@ -145,7 +152,11 @@ const FootballPage = () => {
       ) : null}
 
       <Grid item xs={12}>
-        <Button startIcon={<AddIcon />} onClick={handleClickOpen} variant="contained">
+        <Button
+          startIcon={<AddIcon />}
+          onClick={handleClickOpen}
+          variant="contained"
+        >
           Add Football
         </Button>
       </Grid>
@@ -157,7 +168,11 @@ const FootballPage = () => {
           </Box>
         ) : null}
 
-        <TableFootball onEdit={handleOpenEdit} onDelete={handleDelete} data={data} />
+        <TableFootball
+          onEdit={handleOpenEdit}
+          onDelete={handleDelete}
+          data={data}
+        />
       </Grid>
 
       {pagination.totalPage ? (

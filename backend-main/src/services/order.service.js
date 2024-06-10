@@ -22,16 +22,20 @@ const { formatDateInsert, formatDateToHAM, formatDate } = require("../utils/comm
 const { findFootballByNotInIds } = require("../models/repositories/football.repository");
 
 class OrderService {
-  static createOrder = async ({
-    user,
-    football,
-    phoneNumber,
-    type,
-    selectedDates = [],
-    selectedDate = "",
-    startTime,
-    endTime,
-  }) => {
+  static createOrder = async (payload) => {
+    const {
+      user,
+      football,
+      phoneNumber,
+      type,
+      selectedDates = [],
+      selectedDate = "",
+      startTime,
+      endTime,
+    } = payload;
+
+    console.log(`payload :::`, payload);
+
     /**
      * type = enum ['day', 'month', 'year']
      * Step 1: Check order
@@ -46,8 +50,8 @@ class OrderService {
         user,
         football,
         date: formatDate(selectedDate, "YYYY-MM-DD"), // -> format to YYYY-MM-DD
-        startTime: fEndTimeToHAM,
-        endTime: fStartTimeToHAM,
+        startTime: fStartTimeToHAM,
+        endTime: fEndTimeToHAM,
       });
 
       if (checkOrderExist.length) {
@@ -67,8 +71,8 @@ class OrderService {
                   user,
                   football,
                   date: fDate,
-                  startTime: fEndTimeToHAM,
-                  endTime: fStartTimeToHAM,
+                  startTime: fStartTimeToHAM,
+                  endTime: fEndTimeToHAM,
                 });
 
                 if (checkOrderExist.length) {
@@ -195,6 +199,8 @@ class OrderService {
       )
     );
 
+    console.log(`response:::`, response);
+
     response = response
       .reduce((t, v) => (t = [...t, ...v]), [])
       .sort(
@@ -246,6 +252,16 @@ class OrderService {
     }
 
     return true;
+  };
+
+  static cancelOrderDetails = async (orderDetailId) => {
+    const orderDetails = await findOderDetailsById(orderDetailId);
+
+    if (!orderDetails) {
+      throw new NotFoundRequestError(`Order details not found!`);
+    }
+
+    return await updateOrderDetails(orderDetailId, { status: OrderDetailsStatus.canceled });
   };
 }
 

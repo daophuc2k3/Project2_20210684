@@ -22,6 +22,10 @@ const mapperData = (response) =>
     date: formatDate(t.date),
   }));
 
+const getDataTime = (value) => {
+  return value.split(":");
+};
+
 const findOrderDetailsByOrderId = async (orderId) => {
   const response = await orderDetailsModel
     .find({ order: orderId })
@@ -44,79 +48,50 @@ const findOrderDetailsByOrderId = async (orderId) => {
  * @returns
  */
 const findOrderDetailsByTime = async ({ startTime, endTime, date, footballId, notIns = [] }) => {
-  // console.log(`query `, { startTime, endTime, date });
+  console.log(`query `, { startTime, endTime, date });
 
   const fStartTime = formatDateInsert(`${date} ${startTime}`, "YYYY-MM-DD HH:mm");
   const fEndTime = formatDateInsert(`${date} ${endTime}`, "YYYY-MM-DD HH:mm");
-  // console.log({ fStartTime, fEndTime, date: date });
+  console.log({ fStartTime, fEndTime, date: date });
 
   const statusCondition = notIns.length ? { status: { $nin: notIns } } : {};
   const football = footballId ? { football: footballId } : {};
 
   const response = await orderDetailsModel
     .find({
-      $or: [
-        {
-          date: Array.isArray(date) ? date.map((t) => toDate(t)) : toDate(date),
-          startTime: {
-            $gte: fStartTime,
-          },
-          endTime: {
-            $lte: fEndTime,
-          },
-          ...statusCondition,
-          ...football,
+      ...{
+        startTime: {
+          $gte: fStartTime,
         },
-        {
-          date: Array.isArray(date) ? date.map((t) => toDate(t)) : toDate(date),
-          startTime: {
-            $gte: fStartTime,
-            $lte: fEndTime,
-          },
-          ...statusCondition,
-          ...football,
-        },
-        {
-          date: Array.isArray(date) ? date.map((t) => toDate(t)) : toDate(date),
-          endTime: {
-            $gte: fStartTime,
-            $lte: fEndTime,
-          },
-          ...statusCondition,
-          ...football,
-        },
-        {
-          date: Array.isArray(date) ? date.map((t) => toDate(t)) : toDate(date),
-          endTime: {
-            $gte: fEndTime,
-          },
-          startTime: {
-            $lte: fEndTime,
-          },
-          ...statusCondition,
-          ...football,
-        },
-        {
-          date: Array.isArray(date) ? date.map((t) => toDate(t)) : toDate(date),
-          endTime: {
-            $gte: fEndTime,
-          },
-          ...statusCondition,
-          ...football,
-        },
-      ],
+        date: Array.isArray(date) ? date.map((t) => toDate(t)) : toDate(date),
+        ...statusCondition,
+        ...football,
+      },
     })
     .sort({ date: "asc" })
     .lean();
 
   if (!response.length) return [];
 
-  return mapperData(response);
+  // Format string to ['MM', 'mm'] ex: string 10:00 -> ['10', '00'] -> get element 0 -> 10
+  const getEndTime = +getDataTime(endTime)[0];
+
+  const newResponse = response.filter((row) => {
+    let _endTime = formatDate(row.endTime, "HH:mm");
+    _endTime = +getDataTime(_endTime)[0];
+
+    if (_endTime <= getEndTime) return true;
+    return false;
+  });
+
+  return mapperData(newResponse);
 };
 
 const findOrderDetailsByUser = async ({ user, football, startTime, endTime, date }) => {
   const fStartTime = formatDateInsert(`${date} ${startTime}`, "YYYY-MM-DD HH:mm");
   const fEndTime = formatDateInsert(`${date} ${endTime}`, "YYYY-MM-DD HH:mm");
+
+  console.log({ fStartTime, fEndTime });
 
   const response = await orderDetailsModel
     .find({
@@ -139,11 +114,13 @@ const findOrderDetailsByUser = async ({ user, football, startTime, endTime, date
       },
     });
 
+  console.log(response);
+
   return response;
 };
 
 const updateOrderDetails = async (id, data) => {
-  const updated = await orderDetailsModel.findByIdAndUpdate(id, data);
+  const updated = await orderDetailsModel.findByIdAndUpdate(id, data, { new: true });
   return updated;
 };
 

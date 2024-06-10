@@ -18,31 +18,31 @@ import { useMemo } from "react";
 import { NavLink } from "react-router-dom";
 import { listItemsAdmin, listItemsClient, listItemsCommon } from "./listItems";
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" })(
-  ({ theme, open }) => ({
-    "& .MuiDrawer-paper": {
-      position: "relative",
-      whiteSpace: "nowrap",
-      width: DRAWER_WIDTH,
+const Drawer = styled(MuiDrawer, {
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme, open }) => ({
+  "& .MuiDrawer-paper": {
+    position: "relative",
+    whiteSpace: "nowrap",
+    width: DRAWER_WIDTH,
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    boxSizing: "border-box",
+    ...(!open && {
+      overflowX: "hidden",
       transition: theme.transitions.create("width", {
         easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
+        duration: theme.transitions.duration.leavingScreen,
       }),
-      boxSizing: "border-box",
-      ...(!open && {
-        overflowX: "hidden",
-        transition: theme.transitions.create("width", {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.leavingScreen,
-        }),
-        width: theme.spacing(7),
-        [theme.breakpoints.up("sm")]: {
-          width: theme.spacing(9),
-        },
-      }),
-    },
-  })
-);
+      width: theme.spacing(7),
+      [theme.breakpoints.up("sm")]: {
+        width: theme.spacing(9),
+      },
+    }),
+  },
+}));
 
 const SidebarDashboard = ({ open, toggleDrawer }) => {
   const { user } = useAuth();
@@ -101,27 +101,32 @@ const SidebarDashboard = ({ open, toggleDrawer }) => {
 
           <List component="nav">
             <ListItemButton>
-              <ListItemText primary={`For customer`} sx={{ "& > span": { fontWeight: 700 } }} />
+              <ListItemText
+                primary={`For customer`}
+                sx={{ "& > span": { fontWeight: 700 } }}
+              />
             </ListItemButton>
 
-            {listItemsClient.map((item, index) => (
-              <ListItemButton
-                key={index}
-                component={NavLink}
-                to={item.path}
-                sx={{
-                  "&.active": {
-                    color: "text.primary",
-                    bgcolor: "action.selected",
-                    fontWeight: "fontWeightBold",
-                  },
-                }}
-                end="true"
-              >
-                <ListItemIcon>{item.Icon}</ListItemIcon>
-                <ListItemText primary={item.name} />
-              </ListItemButton>
-            ))}
+            {listItemsClient
+              .filter((it) => it.isCustomer)
+              .map((item, index) => (
+                <ListItemButton
+                  key={index}
+                  component={NavLink}
+                  to={item.path}
+                  sx={{
+                    "&.active": {
+                      color: "text.primary",
+                      bgcolor: "action.selected",
+                      fontWeight: "fontWeightBold",
+                    },
+                  }}
+                  end="true"
+                >
+                  <ListItemIcon>{item.Icon}</ListItemIcon>
+                  <ListItemText primary={item.name} />
+                </ListItemButton>
+              ))}
           </List>
         </>
       ) : null}

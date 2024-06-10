@@ -9,7 +9,9 @@ const findCategoryBySlug = async (slug) => {
 };
 
 const updateCategory = async (id, data) => {
-  const response = await categoryModel.findByIdAndUpdate(id, data, { new: true });
+  const response = await categoryModel.findByIdAndUpdate(id, data, {
+    new: true,
+  });
   return response;
 };
 
@@ -26,7 +28,11 @@ const findCategoryById = async (categoryId) => {
 const findAllCategory = async (filters = {}) => {
   const { options, limit, page, skip, sortBy } = parserParams(filters);
 
-  const response = await categoryModel.find(options).limit(limit).skip(skip).sort(sortBy);
+  const response = await categoryModel
+    .find(options)
+    .limit(limit)
+    .skip(skip)
+    .sort(sortBy);
 
   const total = await categoryModel.countDocuments(options);
 

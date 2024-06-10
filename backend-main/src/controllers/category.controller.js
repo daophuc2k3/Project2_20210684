@@ -61,6 +61,16 @@ class CategoryController {
       metadata: await CategoryService.deleteById(id),
     }).send(res);
   };
+
+  updateStatus = async (req, res) => {
+    const { status } = req.body;
+    const categoryId = req.params.id;
+
+    return new Ok({
+      message: "Update status successfully",
+      metadata: await CategoryService.updateStatus(categoryId, status),
+    }).send(res);
+  };
 }
 
 module.exports = new CategoryController();

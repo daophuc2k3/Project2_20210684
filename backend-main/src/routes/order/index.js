@@ -20,6 +20,10 @@ router.get("/filter-date-by-time", asyncHandler(orderController.filterDatesByTim
 
 router.post("/change-status/:orderDetailsId", asyncHandler(orderController.changeStatus));
 router.post(
+  "/cancel-order-details/:orderDetailsId",
+  asyncHandler(orderController.cancelOrderDetails)
+);
+router.post(
   "/update-order-details/:orderDetailsId",
   asyncHandler(orderController.updateOrderDetails)
 );

@@ -2,12 +2,16 @@ import DialogAddEditCategory from "@components/category/DialogAddEditCategory";
 import TableCategory from "@components/category/TableCategory";
 import DialogDelete from "@components/shared/DialogDelete";
 import Metadata from "@components/shared/Metadata";
-import { setFilterCategory, useCategory } from "@features/category/categorySlice";
+import {
+  setFilterCategory,
+  useCategory,
+} from "@features/category/categorySlice";
 import {
   fetchAddCategory,
   fetchAllCategory,
   fetchDeleteCategory,
   fetchEditCategory,
+  updateCategoryStatus,
 } from "@features/category/categoryThunk";
 import AddIcon from "@mui/icons-material/Add";
 import Box from "@mui/material/Box";
@@ -22,7 +26,7 @@ import { useDispatch } from "react-redux";
 const CategoryPage = () => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [openDelete, setOpenDelete] = useState(false);
+  const [openUpdateStatus, setOpenUpdateStatus] = useState(false);
   const { filters, loading, data, pagination } = useCategory();
   const dispatch = useDispatch();
 
@@ -43,9 +47,9 @@ const CategoryPage = () => {
     dispatch(setFilterCategory({ ...filters, page }));
   };
 
-  const handleCloseDialogDeleteCategory = () => {
+  const handleCloseDialogUpdateStt = () => {
     setSelected(null);
-    setOpenDelete(false);
+    setOpenUpdateStatus(false);
   };
 
   const handleOpenEdit = (item) => {
@@ -53,9 +57,9 @@ const CategoryPage = () => {
     setOpen(true);
   };
 
-  const handleDelete = (item) => {
+  const handleUpdateStatus = (item) => {
     setSelected(item);
-    setOpenDelete(true);
+    setOpenUpdateStatus(true);
   };
 
   const initialValues = useMemo(() => {
@@ -71,12 +75,14 @@ const CategoryPage = () => {
 
   const handleSubmit = (values) => {
     if (values._id) {
-      dispatch(fetchEditCategory({ id: values._id, data: values })).then((payload) => {
-        if (!isEmpty(payload.error)) return;
+      dispatch(fetchEditCategory({ id: values._id, data: values })).then(
+        (payload) => {
+          if (!isEmpty(payload.error)) return;
 
-        setOpen(false);
-        setSelected(null);
-      });
+          setOpen(false);
+          setSelected(null);
+        }
+      );
     } else {
       dispatch(fetchAddCategory(values)).then((payload) => {
         if (!isEmpty(payload.error)) return;
@@ -86,13 +92,15 @@ const CategoryPage = () => {
     }
   };
 
-  const handleAgreeDeleteCategory = () => {
-    if (!openDelete || !selected) return;
+  const handleUpdateCategoryStatus = () => {
+    if (!openUpdateStatus || !selected) return;
 
-    dispatch(fetchDeleteCategory(selected._id)).then((payload) => {
+    dispatch(
+      updateCategoryStatus({ id: selected._id, status: selected.status })
+    ).then((payload) => {
       if (!isEmpty(payload.error)) return;
 
-      setOpenDelete(false);
+      setOpenUpdateStatus(false);
       setSelected(null);
       dispatch(fetchAllCategory(filters));
     });
@@ -112,18 +120,23 @@ const CategoryPage = () => {
         />
       ) : null}
 
-      {openDelete && selected ? (
+      {openUpdateStatus && selected ? (
         <DialogDelete
-          open={openDelete && Boolean(selected)}
-          onClose={handleCloseDialogDeleteCategory}
+          open={openUpdateStatus && Boolean(selected)}
+          onClose={handleCloseDialogUpdateStt}
           name={selected?.name}
-          onAgree={handleAgreeDeleteCategory}
+          onAgree={handleUpdateCategoryStatus}
           loading={loading}
+          title={selected?.status === "SHOW" ? "Show" : "Hide"}
         />
       ) : null}
 
       <Grid item xs={12}>
-        <Button startIcon={<AddIcon />} onClick={handleClickOpen} variant="contained">
+        <Button
+          startIcon={<AddIcon />}
+          onClick={handleClickOpen}
+          variant="contained"
+        >
           Add Category
         </Button>
       </Grid>
@@ -135,7 +148,11 @@ const CategoryPage = () => {
           </Box>
         ) : null}
 
-        <TableCategory onEdit={handleOpenEdit} onDelete={handleDelete} data={data} />
+        <TableCategory
+          onEdit={handleOpenEdit}
+          onUpdateStatus={handleUpdateStatus}
+          data={data}
+        />
       </Grid>
 
       {pagination.totalPage ? (

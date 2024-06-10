@@ -15,6 +15,7 @@ router
   .route("/:id")
   .get(asyncHandler(categoryController.getCategoryById))
   .patch(asyncHandler(categoryController.updateCategory))
-  .delete(asyncHandler(categoryController.deleteCategoryId));
+  .delete(asyncHandler(categoryController.deleteCategoryId))
+  .post(asyncHandler(categoryController.updateStatus));
 
 module.exports = router;

@@ -61,3 +61,18 @@ export const fetchDeleteCategory = createAsyncThunk(
     }
   }
 );
+
+export const updateCategoryStatus = createAsyncThunk(
+  "category/updateCategoryStatus",
+  async ({ id, status }, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await categoryAPI.post({ status }, `/${id}`);
+      toast.success(response.message);
+      return response;
+    } catch (error) {
+      const message = error?.response?.data.message ?? error?.message;
+      toast.error(message);
+      return rejectWithValue(message);
+    }
+  }
+);

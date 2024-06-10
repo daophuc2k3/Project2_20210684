@@ -1,3 +1,9 @@
+import {
+  HideSourceOutlined,
+  ShowChartOutlined,
+  Visibility,
+  VisibilityOff,
+} from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import IconButton from "@mui/material/IconButton";
@@ -11,7 +17,12 @@ import TableRow from "@mui/material/TableRow";
 import Tooltip from "@mui/material/Tooltip";
 import { formatDate } from "@utils/format";
 
-const TableCategory = ({ data, onDelete = (item) => {}, onEdit = (item) => {} }) => {
+const TableCategory = ({
+  data,
+  onDelete = (item) => {},
+  onEdit = (item) => {},
+  onUpdateStatus,
+}) => {
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -29,7 +40,10 @@ const TableCategory = ({ data, onDelete = (item) => {}, onEdit = (item) => {} })
         <TableBody>
           {data.length ? (
             data.map((row, index) => (
-              <TableRow key={row.name} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+              <TableRow
+                key={row.name}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
                 <TableCell component="th" scope="row">
                   {`#${index + 1}`}
                 </TableCell>
@@ -45,11 +59,27 @@ const TableCategory = ({ data, onDelete = (item) => {}, onEdit = (item) => {} })
                     </IconButton>
                   </Tooltip>
 
-                  <Tooltip title="Delete">
-                    <IconButton onClick={() => onDelete?.(row)} color="error">
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
+                  {row.status === "SHOW" ? (
+                    <Tooltip title="Hide">
+                      <IconButton
+                        onClick={() =>
+                          onUpdateStatus({ ...row, status: "HIDE" })
+                        }
+                      >
+                        <VisibilityOff />
+                      </IconButton>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip title="Show">
+                      <IconButton
+                        onClick={() =>
+                          onUpdateStatus({ ...row, status: "SHOW" })
+                        }
+                      >
+                        <Visibility />
+                      </IconButton>
+                    </Tooltip>
+                  )}
                 </TableCell>
               </TableRow>
             ))

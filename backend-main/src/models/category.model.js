@@ -26,6 +26,11 @@ var categorySchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    status: {
+      type: String,
+      enum: ["SHOW", "HIDE"],
+      default: "SHOW",
+    },
   },
   {
     timestamps: true,
