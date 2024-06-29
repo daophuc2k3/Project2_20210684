@@ -47,10 +47,19 @@ const findOrderDetailsByOrderId = async (orderId) => {
  * @param {{ startTime: string, endTime: string, date: string | string[], footballId: string, notIns: string[] }} param0
  * @returns
  */
-const findOrderDetailsByTime = async ({ startTime, endTime, date, footballId, notIns = [] }) => {
+const findOrderDetailsByTime = async ({
+  startTime,
+  endTime,
+  date,
+  footballId,
+  notIns = [],
+}) => {
   console.log(`query `, { startTime, endTime, date });
 
-  const fStartTime = formatDateInsert(`${date} ${startTime}`, "YYYY-MM-DD HH:mm");
+  const fStartTime = formatDateInsert(
+    `${date} ${startTime}`,
+    "YYYY-MM-DD HH:mm"
+  );
   const fEndTime = formatDateInsert(`${date} ${endTime}`, "YYYY-MM-DD HH:mm");
   console.log({ fStartTime, fEndTime, date: date });
 
@@ -60,9 +69,26 @@ const findOrderDetailsByTime = async ({ startTime, endTime, date, footballId, no
   const response = await orderDetailsModel
     .find({
       ...{
-        startTime: {
-          $gte: fStartTime,
-        },
+        $or: [
+          {
+            $and: [
+              { startTime: { $lte: fStartTime } },
+              { endTime: { $gt: fStartTime } },
+            ],
+          },
+          {
+            $and: [
+              { startTime: { $lt: fEndTime } },
+              { endTime: { $gte: fEndTime } },
+            ],
+          },
+          {
+            $and: [
+              { startTime: { $gte: fStartTime } },
+              { endTime: { $lte: fEndTime } },
+            ],
+          },
+        ],
         date: Array.isArray(date) ? date.map((t) => toDate(t)) : toDate(date),
         ...statusCondition,
         ...football,
@@ -84,11 +110,20 @@ const findOrderDetailsByTime = async ({ startTime, endTime, date, footballId, no
     return false;
   });
 
-  return mapperData(newResponse);
+  return mapperData(response);
 };
 
-const findOrderDetailsByUser = async ({ user, football, startTime, endTime, date }) => {
-  const fStartTime = formatDateInsert(`${date} ${startTime}`, "YYYY-MM-DD HH:mm");
+const findOrderDetailsByUser = async ({
+  user,
+  football,
+  startTime,
+  endTime,
+  date,
+}) => {
+  const fStartTime = formatDateInsert(
+    `${date} ${startTime}`,
+    "YYYY-MM-DD HH:mm"
+  );
   const fEndTime = formatDateInsert(`${date} ${endTime}`, "YYYY-MM-DD HH:mm");
 
   console.log({ fStartTime, fEndTime });
@@ -120,7 +155,9 @@ const findOrderDetailsByUser = async ({ user, football, startTime, endTime, date
 };
 
 const updateOrderDetails = async (id, data) => {
-  const updated = await orderDetailsModel.findByIdAndUpdate(id, data, { new: true });
+  const updated = await orderDetailsModel.findByIdAndUpdate(id, data, {
+    new: true,
+  });
   return updated;
 };
 

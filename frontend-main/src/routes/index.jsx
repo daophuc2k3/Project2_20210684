@@ -13,6 +13,7 @@ import OrderPage from "@pages/OrderPage";
 import ProductPage from "@pages/ProductPage";
 import ProfilePage from "@pages/ProfilePage";
 import SignUpPage from "@pages/SignUpPage";
+import StatisticsPage from "@pages/StatisticsPage/StatisticsPage";
 import { store } from "@store/store";
 import { isEmpty } from "lodash";
 import { createBrowserRouter, Navigate, redirect } from "react-router-dom";
@@ -82,7 +83,11 @@ const router = createBrowserRouter([
       { index: true, element: <Navigate to="/admin/order" /> },
 
       // Admins
-      { path: "admin/order", element: <OrderPage />, loader: authentication(UserRoles.admin) },
+      {
+        path: "admin/order",
+        element: <OrderPage />,
+        loader: authentication(UserRoles.admin),
+      },
       {
         path: "admin/customer",
         element: <CustomerPage />,
@@ -98,7 +103,15 @@ const router = createBrowserRouter([
         element: <FootballPage />,
         loader: authentication(UserRoles.admin),
       },
-      { path: "admin/product", element: <ProductPage />, loader: authentication(UserRoles.admin) },
+      {
+        path: "admin/product",
+        element: <ProductPage />,
+        loader: authentication(UserRoles.admin),
+      },
+      {
+        path: "admin/statistics",
+        element: <StatisticsPage />,
+      },
 
       // Clients
       { path: "order", element: <OrderPageClient />, loader: authentication() },

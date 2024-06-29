@@ -10,5 +10,6 @@ router.use("/api/v1/category", require("./category"));
 router.use("/api/v1/football", require("./football"));
 router.use("/api/v1/product", require("./product"));
 router.use("/api/v1/order", require("./order"));
+router.use("/api/v1/statistics", require("./statistics"));
 
 module.exports = router;

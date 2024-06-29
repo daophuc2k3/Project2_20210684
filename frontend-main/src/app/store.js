@@ -5,6 +5,7 @@ import footballReducer from "@features/football/footballSlice";
 import authReducer from "@features/auth/authSlice";
 import orderReducer from "@features/order/orderSlice";
 import userReducer from "@features/user/userSlice";
+import statisticsReducer from "@features/statistics/statisticsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -14,5 +15,6 @@ export const store = configureStore({
     auth: authReducer,
     order: orderReducer,
     user: userReducer,
+    statistics: statisticsReducer,
   },
 });

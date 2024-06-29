@@ -1,5 +1,5 @@
 import CategoryIcon from "@mui/icons-material/Category";
-import DashboardIcon from "@mui/icons-material/Dashboard";
+import EqualizerIcon from "@mui/icons-material/Equalizer";
 import PeopleIcon from "@mui/icons-material/People";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
@@ -30,6 +30,11 @@ export const listItemsAdmin = [
     name: "Product",
     path: "/admin/product",
     Icon: <ProductionQuantityLimitsIcon />,
+  },
+  {
+    name: "Statistics",
+    path: "/admin/statistics",
+    Icon: <EqualizerIcon />,
   },
 ];
 
